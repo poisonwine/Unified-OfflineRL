@@ -17,7 +17,7 @@ from offlinerlkit.buffer import ReplayBuffer
 from offlinerlkit.utils.logger import Logger, make_log_dirs
 from offlinerlkit.policy_trainer import MFPolicyTrainer
 # from offlinerlkit.policy import TD3BCPolicy
-from offlinerlkit.policy import WTD3BCPolicy
+from offlinerlkit.policy import ISARPolicy
 from offlinerlkit.modules import ActorProb, TanhDiagGaussian
 from offlinerlkit.policy import AWACPolicy
 
@@ -32,7 +32,7 @@ import seaborn as sns
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--algo-name", type=str, default="wtd3bc-iql2")
+    parser.add_argument("--algo-name", type=str, default="isar")
     parser.add_argument("--task", type=str, default="hopper-expert-v2")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--actor-lr", type=float, default=3e-4)
@@ -142,7 +142,7 @@ def train(args=get_args()):
     scaler = StandardScaler(mu=obs_mean, std=obs_std)
 
     # create policy
-    policy = WTD3BCPolicy(
+    policy = ISARPolicy(
         actor,
         critic1,
         critic2,
@@ -164,40 +164,6 @@ def train(args=get_args()):
         scaler=scaler
     )
 
-    # awac policy 
-    actor_backbone = MLP(input_dim=np.prod(args.obs_shape), hidden_dims=[256, 256])
-    critic1_backbone = MLP(input_dim=np.prod(args.obs_shape)+args.action_dim, hidden_dims=[256, 256])
-    critic2_backbone = MLP(input_dim=np.prod(args.obs_shape)+args.action_dim, hidden_dims=[256, 256])
-    dist = TanhDiagGaussian(
-        latent_dim=getattr(actor_backbone, "output_dim"),
-        output_dim=args.action_dim,
-        unbounded=True,
-        conditioned_sigma=False
-    )
-    actor = ActorProb(actor_backbone, dist, args.device)
-
-    critic1 = Critic(critic1_backbone, args.device)
-    critic2 = Critic(critic2_backbone, args.device)
-    actor_optim = torch.optim.Adam(actor.parameters(), lr=args.actor_lr)
-    critic1_optim = torch.optim.Adam(critic1.parameters(), lr=args.critic_lr)
-    critic2_optim = torch.optim.Adam(critic2.parameters(), lr=args.critic_lr)
-
-    # scaler for normalizing observations
-
-    # create policy
-    awac_policy = AWACPolicy(
-        actor,
-        critic1,
-        critic2,
-        actor_optim,
-        critic1_optim,
-        critic2_optim,
-        tau=args.tau,
-        gamma=args.gamma,
-        awac_temperature = args.temperature,
-    )
-
-
 
     # log
     log_dirs = make_log_dirs(args.task, args.algo_name, args.seed, vars(args))
@@ -210,29 +176,10 @@ def train(args=get_args()):
     logger = Logger(log_dirs, output_config)
     logger.log_hyperparameters(vars(args))
 
-    # create policy trainer
-    # policy_trainer = MFPolicyTrainer(
-    #     policy=policy,
-    #     eval_env=env,
-    #     buffer=buffer,
-    #     logger=logger,
-    #     epoch=args.epoch,
-    #     step_per_epoch=args.step_per_epoch,
-    #     batch_size=args.batch_size,
-    #     eval_episodes=args.eval_episodes
-    # )
-
-    # train
-    # policy_trainer.train()
-    path = '/data1/ydy/RL/OfflineRL-Kit/log/hopper-expert-v2/WBC/seed_5&timestamp_23-0317-132313/model/policy.pth'
+    path = './log/hopper-expert-v2/ISAR/seed_5&timestamp_23-0317-132313/model/policy.pth'
     state_dicts = torch.load(path)
     policy.load_state_dict(state_dicts)
     policy.eval()
-
-    # awac_path ='/data1/ydy/RL/OfflineRL-Kit/log/hopper-medium-replay-v2/AWAC/seed_5&timestamp_23-0320-021007/model/policy.pth'
-    # state_dicts = torch.load(awac_path)
-    # awac_policy.load_state_dict(state_dicts)
-    # awac_policy.eval()
 
     fig, ax = plt.subplots()
     tsne = TSNE(n_components=2, n_iter=1000, random_state=10)
@@ -248,20 +195,14 @@ def train(args=get_args()):
             batch["next_observations"], batch["rewards"], batch["terminals"]
         rewards = rewards.cpu().numpy()
 
-        print(rewards.shape)
+        # print(rewards.shape)
         all_rewards.append(rewards)
         all_actions.append(actions.cpu().numpy())
-        # if scaler is not None:
-        #     norm_obs = scaler.transform(obss.cpu().numpy())
 
         with torch.no_grad():
             policy_actions = policy.actor(obss).cpu().numpy()
         all_policy_actions.append(policy_actions)
-        # with torch.no_grad():
-        #     dist = awac_policy.actor(obss)
-        #     policy_actions, raw_action = dist.mode()
-        #     policy_actions = policy_actions.cpu().numpy()
-        # all_policy_actions.append(policy_actions)
+      
 
     all_actions = np.array(all_actions).reshape(sample_num * args.batch_size, -1)
     all_policy_actions = np.array(all_policy_actions).reshape(sample_num * args.batch_size, -1)
@@ -274,8 +215,7 @@ def train(args=get_args()):
     # points2 = points[all_actions.shape[0]:all_actions.shape[0]*2,:]
     points2 = points[all_actions.shape[0]:,:]
     norm_reward = (rewards - rewards.min()) / (rewards.max() - rewards.min())
-    # norm_reward = np.exp(norm_reward)
-        # fig, ax = plt.figure(figsize=(8,6))
+
     fig, ax = plt.subplots()
     # c = ax.scatter(points1[:,0], points1[:,1], c=norm_reward,s=5,cmap='RdBu')
     ax.scatter(points2[:,0], points2[:,1], color='r',s=10,label='policy action')
