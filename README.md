@@ -1,14 +1,10 @@
-<div align="center">
-  <img width="500px" height="auto" src="assets/logo.png">
-</div>
 
----
 
-# OfflineRL-Kit: An elegant PyTorch offline reinforcement learning library.
+# Unified OfflineRL: A Unified PyTorch offline reinforcement learning library.
 
 ![MIT](https://img.shields.io/badge/license-MIT-blue)
 
-OfflineRL-Kit is an offline reinforcement learning library based on pure PyTorch. This library has some features which are friendly and convenient for researchers, including:
+We use official OfflineRL-Kit (https://github.com/yihaosun1124/OfflineRL-Kit) and extend the supported algorithms. This library has some features which are friendly and convenient for researchers, including:
 
 - Elegant framework, the code structure is very clear and easy to use
 - State-of-the-art offline RL algorithms, including model-free and model-based approaches
@@ -16,13 +12,18 @@ OfflineRL-Kit is an offline reinforcement learning library based on pure PyTorch
 - Support parallel tuning, very convenient for researchers
 - Clear and powerful log system, easy to manage experiments
 
+
 ## Supported algorithms
 - Model-free
+    - [Advantage-weighted Actor-Critic (AWAC)] (https://arxiv.org/abs/2006.09359)
+    - [TD3+BC](https://arxiv.org/abs/2106.06860)
     - [Conservative Q-Learning (CQL)](https://arxiv.org/abs/2006.04779)
     - [TD3+BC](https://arxiv.org/abs/2106.06860)
     - [Implicit Q-Learning (IQL)](https://arxiv.org/abs/2110.06169)
     - [Ensemble-Diversified Actor Critic (EDAC)](https://arxiv.org/abs/2110.01548)
     - [Mildly Conservative Q-Learning (MCQ)](https://arxiv.org/abs/2206.04745)
+    - [Sparse Q learning (SQL)] (https://arxiv.org/abs/2303.15810)
+    - [In-sample advantage-regulated OfflineRL (ISAR)]
 - Model-based
     - [Model-based Offline Policy Optimization (MOPO)](https://arxiv.org/abs/2005.13239)
     - [Conservative Offline Model-Based Policy Optimization (COMBO)](https://arxiv.org/abs/2102.08363)
@@ -30,8 +31,8 @@ OfflineRL-Kit is an offline reinforcement learning library based on pure PyTorch
 
 ## Installation
 ```shell
-git clone https://github.com/yihaosun1124/OfflineRL-Kit.git
-cd OfflineRL-Kit
+git clone https://github.com/poisonwine/Unified-OfflineRL.git
+cd Unified-OfflineRL
 python setup.py install
 ```
 
