@@ -16,7 +16,6 @@ We use official OfflineRL-Kit (https://github.com/yihaosun1124/OfflineRL-Kit) an
 ## Supported algorithms
 - Model-free
     - [Advantage-weighted Actor-Critic (AWAC)](https://arxiv.org/abs/2006.09359)
-    - [TD3+BC](https://arxiv.org/abs/2106.06860)
     - [Conservative Q-Learning (CQL)](https://arxiv.org/abs/2006.04779)
     - [TD3+BC](https://arxiv.org/abs/2106.06860)
     - [Implicit Q-Learning (IQL)](https://arxiv.org/abs/2110.06169)

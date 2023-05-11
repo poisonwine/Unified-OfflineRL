@@ -9,7 +9,7 @@ from offlinerlkit.utils.noise import GaussianNoise
 from offlinerlkit.utils.scaler import StandardScaler
 
 
-class WTD3BCPolicy(TD3Policy):
+class ISARPolicy(TD3Policy):
     """
     TD3+BC <Ref: https://arxiv.org/abs/2106.06860>
     """

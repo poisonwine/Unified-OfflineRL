@@ -8,7 +8,7 @@ from offlinerlkit.policy.model_free.iql import IQLPolicy
 from offlinerlkit.policy.model_free.mcq import MCQPolicy
 from offlinerlkit.policy.model_free.td3bc import TD3BCPolicy
 from offlinerlkit.policy.model_free.edac import EDACPolicy
-from offlinerlkit.policy.model_free.wtd3bc import WTD3BCPolicy
+from offlinerlkit.policy.model_free.isar import ISARPolicy
 from offlinerlkit.policy.model_free.wtd3bc2 import WTD3BC2Policy
 from offlinerlkit.policy.model_free.wtd3bcEnsemble import WBCEnsemblePolicy
 from offlinerlkit.policy.model_free.awac import AWACPolicy
@@ -35,7 +35,7 @@ __all__ = [
     "MOBILEPolicy",
     "RAMBOPolicy",
     "COMBOPolicy",
-    "WTD3BCPolicy",
+    "ISARPolicy",
     'AWACPolicy',
     'SQLPolicy',
     'WTD3BC2Policy',

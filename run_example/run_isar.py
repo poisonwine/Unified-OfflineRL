@@ -16,13 +16,12 @@ from offlinerlkit.utils.scaler import StandardScaler
 from offlinerlkit.buffer import ReplayBuffer
 from offlinerlkit.utils.logger import Logger, make_log_dirs
 from offlinerlkit.policy_trainer import MFPolicyTrainer
-# from offlinerlkit.policy import TD3BCPolicy
-from offlinerlkit.policy import WTD3BCPolicy
+from offlinerlkit.policy import ISARPolicy
 
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--algo-name", type=str, default="wtd3bc-iql2")
+    parser.add_argument("--algo-name", type=str, default="isar-policy")
     parser.add_argument("--task", type=str, default="hopper-medium-v2")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--actor-lr", type=float, default=3e-4)
@@ -132,7 +131,7 @@ def train(args=get_args()):
     scaler = StandardScaler(mu=obs_mean, std=obs_std)
 
     # create policy
-    policy = WTD3BCPolicy(
+    policy = ISARPolicy(
         actor,
         critic1,
         critic2,
